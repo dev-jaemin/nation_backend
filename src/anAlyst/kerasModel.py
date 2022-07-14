@@ -6,9 +6,9 @@ from PIL import Image, ImageOps
 import numpy as np
 import sys
 
-def getResult(path):
+def getResult(path, dir):
     # Load the model
-    model = load_model('./src/anAlyst/keras_model.h5')
+    model = load_model('./src/anAlyst/'+dir+'/keras_model.h5')
 
     # Create the array of the right shape to feed into the keras model
     # The 'length' or number of images you can put into the array is
@@ -33,7 +33,7 @@ def getResult(path):
     maxVal = max(prediction[0])
     idx = np.where(prediction[0] == maxVal)[0][0]
 
-    vFile = open('./src/anAlyst/labels.txt', encoding = 'UTF-8')
+    vFile = open('./src/anAlyst/'+dir+'/labels.txt', encoding = 'UTF-8')
     vLine = 0
     line = "temp"
     for temp in vFile:
@@ -45,4 +45,4 @@ def getResult(path):
     print(className)
 
 if __name__ == "__main__":
-    getResult(sys.argv[1])
+    getResult(sys.argv[1],sys.argv[2])

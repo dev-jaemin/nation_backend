@@ -19,14 +19,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }); // 미들웨어 생성
 
 const router = express.Router();
+
 const params = {
     name: "",
     gender: "",
     testName: "",
 };
 router.post("/", upload.single("img"), async (req, res, next) => {
+    params.name = name;
     params.gender = req.query.gender;
     params.testName = req.query.testName;
+
     let rows = await imageService.uploadImage(params, res, next);
     return res.json(rows);
 });
