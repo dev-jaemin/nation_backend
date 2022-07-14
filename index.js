@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import logger from "morgan";
 import imageController from "./src/controller/imageController.js";
-
 dotenv.config();
 
 const app = express();
