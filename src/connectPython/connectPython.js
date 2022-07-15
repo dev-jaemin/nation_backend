@@ -7,17 +7,23 @@ import pool from "../database/pool.js";
 const connectPython = {
     getContent: async (params) => {
         // params.gender == woman
-        const result = child_process.spawnSync("python", [
+        const pyResult = child_process.spawnSync("python", [
             `./src/anAlyst/kerasModel.py`,
             "./public/image/" + params.name,
             params.testName + "-" + params.gender,
         ]);
 
-        let className = result.stdout.toString().slice(147).slice(0, -2);
+        let className = pyResult.stdout.toString().slice(147).slice(0, -2);
 
         fs.unlink("./public/image/" + params.name, function () {});
-        // let data = await pool.query(query.getContent, [className, params.gender]);
-        return className;
+        // let data = await pool.query(query.getContent, [params.testName, className, params.gender]);
+        let data = await pool.query(query.getContent, [className, params.gender]);
+        let result = {
+            gender: data[0][0].gender,
+            class: data[0][0].class,
+            content: data[0][0][params.testName],
+        };
+        return result;
     },
 };
 

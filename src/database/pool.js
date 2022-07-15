@@ -1,8 +1,12 @@
+import { createPool } from "mysql2";
 import mysql from "mysql2/promise";
 
-module.exports = mysql.createPool({
+const pool = mysql.createPool({
     host: "localhost",
+    port: 3306,
     user: "root",
     password: "sdijm7907", //mysql 설치시 설정했던 비번
     database: "anAlyst", // db 이름
 });
+
+export default pool;
