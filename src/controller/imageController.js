@@ -4,15 +4,16 @@ import path from "path";
 import imageService from "../service/imageService.js";
 
 let name;
+let ext;
 // storage setting for file
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "public/image");
     },
     filename: (req, file, cb) => {
-        let ext = path.extname(file.originalname);
-        name = path.basename(file.originalname, ext) + Date.now() + ext;
-        cb(null, name); // 파일 원본이름 저장
+        ext = path.extname(file.originalname);
+        name = Date.now();
+        cb(null, name + ext); // 파일 원본이름 저장
     },
 });
 
@@ -24,14 +25,21 @@ const params = {
     name: "",
     gender: "",
     testName: "",
+    fileName: "",
+    ext: "",
 };
 router.post("/", upload.single("img"), async (req, res, next) => {
-    params.name = name;
+    params.name = name + ext;
     params.gender = req.query.gender;
     params.testName = req.query.testName;
-
+    params.fileName = name;
+    params.ext = ext;
     let rows = await imageService.uploadImage(params, res, next);
-    return res.json(rows);
+    const header = {
+        "Access-Control-Allow-Origin": "http://aitest.com:3000",
+        "Access-Control-Allow-Credentials": true,
+    };
+    return res.header(header).json(rows);
 });
 
 export default router;

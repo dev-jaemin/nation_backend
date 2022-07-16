@@ -3,26 +3,34 @@ import { response } from "express";
 import fs from "fs";
 import query from "../queries/board-query.js";
 import pool from "../database/pool.js";
+import multer from "multer";
 
 const connectPython = {
     getContent: async (params) => {
         // params.gender == woman
-        const pyResult = child_process.spawnSync("python", [
-            `./src/anAlyst/kerasModel.py`,
-            "./public/image/" + params.name,
-            params.testName + "-" + params.gender,
-        ]);
+        const faceResult = child_process.spawnSync("python", [`./src/anAlyst/pickTheFace.py`, params.fileName, params.ext]);
+        console.log(params);
+
+        let faceFileName = faceResult.stdout.toString().replace("\n", "");
+        let res = fs.existsSync(faceFileName);
+        let result = {
+            gender: params.gender,
+            class: params.testName,
+            content: "No face",
+        };
+        if (!res) return result;
+
+        const pyResult = child_process.spawnSync("python", [`./src/anAlyst/kerasModel.py`, faceFileName, params.testName + "-" + params.gender]);
 
         let className = pyResult.stdout.toString().slice(147).slice(0, -2);
 
         fs.unlink("./public/image/" + params.name, function () {});
-        // let data = await pool.query(query.getContent, [params.testName, className, params.gender]);
+        fs.unlink(faceFileName, function () {});
         let data = await pool.query(query.getContent, [className, params.gender]);
-        let result = {
-            gender: data[0][0].gender,
-            class: data[0][0].class,
-            content: data[0][0][params.testName],
-        };
+        console.log(data[0][0]);
+
+        result.class = data[0][0].class;
+        result.content = data[0][0][params.testName];
         return result;
     },
 };
