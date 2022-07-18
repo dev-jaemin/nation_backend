@@ -29,16 +29,22 @@ const params = {
     ext: "",
 };
 router.post("/", upload.single("img"), async (req, res, next) => {
+    const host = ["http://aitest.com:3000", "http://192.249.19.184:443", "http://domain.com:443"];
+    if (!host.includes(req.headers.origin)) return;
+
     params.name = name + ext;
     params.gender = req.query.gender;
     params.testName = req.query.testName;
     params.fileName = name;
     params.ext = ext;
+
     let rows = await imageService.uploadImage(params, res, next);
+    console.log(req.headers.origin);
     const header = {
-        "Access-Control-Allow-Origin": "http://aitest.com:3000",
+        "Access-Control-Allow-Origin": `${req.headers.origin}`,
         "Access-Control-Allow-Credentials": true,
     };
+
     return res.header(header).json(rows);
 });
 
