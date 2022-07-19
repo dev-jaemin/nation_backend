@@ -18,6 +18,7 @@ const storage = multer.diskStorage({
         // ext = path.extname(file.originalname);
         checkFileName(file.originalname);
         console.log(file.originalname);
+        console.log("ext: " + path.extname(file.originalname));
         ext = ".jpg";
 
         console.log(ext);
@@ -42,7 +43,7 @@ router.post("/", upload.single("img"), async (req, res, next) => {
         "Access-Control-Allow-Origin": "",
         "Access-Control-Allow-Credentials": true,
     };
-    const host = ["http://aitest.com:3000", "http://192.249.19.184:443", "http://domain.com:443"];
+    const host = ["http://aitest.com:443", "http://192.249.19.184:443", "http://domain.com:443", "https://an-al-yst.vercel.app/"];
     if (host.includes(req.headers.origin)) header["Access-Control-Allow-Origin"] = req.headers.origin;
 
     params.name = name + ext;
