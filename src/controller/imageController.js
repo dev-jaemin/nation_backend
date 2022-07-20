@@ -8,7 +8,6 @@ let ext;
 // storage setting for file
 function checkFileName(str) {
     var ext_temp = str.split(".").pop().toLowerCase();
-    console.log("ext_temp: " + ext_temp);
 }
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -17,11 +16,7 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         // ext = path.extname(file.originalname);
         checkFileName(file.originalname);
-        console.log(file.originalname);
-        console.log("ext: " + path.extname(file.originalname));
         ext = ".jpg";
-
-        console.log(ext);
         name = Date.now();
         cb(null, name + ext); // 파일 원본이름 저장
     },
@@ -43,7 +38,22 @@ router.post("/", upload.single("img"), async (req, res, next) => {
         "Access-Control-Allow-Origin": "",
         "Access-Control-Allow-Credentials": true,
     };
-    const host = ["http://aitest.com:443", "http://192.249.19.184:443", "http://domain.com:443", "https://an-al-yst.vercel.app/"];
+    const host = [
+        "https://aitest.com:443",
+        "https://192.249.19.184",
+        "https://192.249.19.184:443",
+        "https://an-al-yst.vercel.app",
+        "https://an-al-yst.netlify.app",
+        "https://an-al-yst.netlify.app/",
+
+        "http://aitest.com:443",
+        "http://192.249.19.184",
+        "http://192.249.19.184:443",
+        "http://an-al-yst.vercel.app",
+        "http://an-al-yst.netlify.app",
+        "http://an-al-yst.netlify.app/",
+    ];
+    console.log(req.headers.origin);
     if (host.includes(req.headers.origin)) header["Access-Control-Allow-Origin"] = req.headers.origin;
 
     params.name = name + ext;
@@ -53,7 +63,6 @@ router.post("/", upload.single("img"), async (req, res, next) => {
     params.ext = ext;
 
     let rows = await imageService.uploadImage(params, res, next);
-    console.log(req.headers.origin);
 
     return res.header(header).json(rows);
 });

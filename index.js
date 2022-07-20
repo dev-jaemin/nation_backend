@@ -1,12 +1,17 @@
 import express from "express";
+import https from "https";
+import http from "http";
 import dotenv from "dotenv";
 import logger from "morgan";
 import imageController from "./src/controller/imageController.js";
+import fs from "fs";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 80;
 
+const port = process.env.PORT || 443;
+
+// const server = https.createServer(app);
 // morgan : 로그를 좀 더 예쁘게 찍어주는 라이브러리
 // combined모드가 좀 더 많은 로그 남김
 if (process.env.NODE_ENV === "production") {
@@ -37,6 +42,19 @@ app.get((req, res) => {
 });
 
 // 서버 실행 코드
-app.listen(port, () => {
+// app.listen(port, () => {
+//     console.log(`server is listening at ${process.env.HOST}`);
+// });
+var options = {
+    key: fs.readFileSync("./private.key", "utf8"),
+    cert: fs.readFileSync("./certificate.crt", "utf8"),
+    ca: fs.readFileSync("./ca_bundle.crt", "utf8"),
+};
+var httpServer = http.createServer(app);
+var httpsServer = https.createServer(options, app);
+httpServer.listen(80, () => {
+    console.log(`server is listening at 80`);
+});
+httpsServer.listen(port, () => {
     console.log(`server is listening at ${process.env.HOST}`);
 });

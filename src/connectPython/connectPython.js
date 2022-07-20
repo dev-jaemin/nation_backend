@@ -16,7 +16,8 @@ const connectPython = {
             gender: params.gender,
             class: params.testName,
             content: "No face",
-            img: "",
+
+            img: "https://192.249.19.184:443/img/no-result.png",
         };
         fs.unlink("./public/image/" + params.name, function () {});
 
